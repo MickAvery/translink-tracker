@@ -1,0 +1,32 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+}
+
+.menu {
+  background-color: black;
+  position: fixed;
+  z-index: 1;
+  opacity: 0.78;
+}
+
+.leaflet-top {
+  padding-top: 30px;
+}
+
+#map {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  z-index: 0;
+}

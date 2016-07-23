@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vancouver Realtime Transit Map</title>
+  <meta charset="utf-8" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Pure CSS -->
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"/>
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+  <!-- Leaflet omnivore (for .kml files) -->
+  <!-- <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script> -->
+</head>
+<body>
+  <div class="pure-menu pure-menu-horizontal menu">
+    <a href="#" class="pure-menu-heading pure-menu-link" style="color: #F3F367;">TRANSLINK REALTIME</a>
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Github</a></li>
+    </ul>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+  <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+  
+  <script>
+    var map = L.map('map', {zoomControl: false}).setView([49.2430, -123.0817], 12);
+    mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+    L.tileLayer(
+      'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; ' + mapLink,
+      maxZoom: 18,
+      }).addTo(map);
+  
+    // set position of zoom control button
+    L.control.zoom({
+      position: 'topleft'  
+    }).addTo(map);
+ 
+    // set markers for every active bus
+    <% if @bus_hash != nil %>
+      <% @bus_hash.each do |bus| %>
+        // Lat : Long
+        var marker = L.marker([<%= bus['Latitude'] %>, <%= bus['Longitude'] %>])
+          .addTo(map)
+          .bindPopup("<b>Bus # </b>" + "<%= bus['RouteNo'] %>" + " <b>Going to </b>" + "<%= bus['Destination'] %>");
+      <% end %>
+    <% end %>
+
+    omnivore.kml('~/Desktop/translink_api/views/doc.kml').addTo(map);
+
+    //setTimeout(function() { location.reload() },10000);
+  </script>
+</body>
+</html>
