@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'net/http'
 require 'json'
+require 'sinatra/jsonp'
 
 #helpers do
   def bus_query # plus optional contraint arguments
@@ -45,8 +46,9 @@ get '/' do
 end
 
 get '/bus' do
-  @bus_hash = bus_query()
-  erb :index
+  #@bus_hash = bus_query()
+  #erb :index
+  JSONP bus_query()
 end
 
 get '/stop' do

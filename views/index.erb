@@ -32,6 +32,8 @@
   <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
   
   <script>
+    var mapMarkers = []; 
+
     var map = L.map('map', {zoomControl: false}).setView([49.2430, -123.0817], 12);
     mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
     L.tileLayer(
@@ -52,12 +54,49 @@
         var marker = L.marker([<%= bus['Latitude'] %>, <%= bus['Longitude'] %>])
           .addTo(map)
           .bindPopup("<b>Bus # </b>" + "<%= bus['RouteNo'] %>" + " <b>Going to </b>" + "<%= bus['Destination'] %>");
+        mapMarkers.push(marker);
       <% end %>
     <% end %>
 
     omnivore.kml('~/Desktop/translink_api/views/doc.kml').addTo(map);
+    
+    function getBusLocations() {
+      $.ajax({
+        url: "/bus",
+        dataType: "JSON",
+        type: "GET",
+        success: function(data) {
+          //console.log(data);
+          updateBusLocations(data);
+          setTimeout(getBusLocations, 2000);
+        }
+      }); 
+    }
 
-    //setTimeout(function() { location.reload() },10000);
+    /*
+     * function to delete old bus location map markers and update with new data
+     */
+    function updateBusLocations(dataJson) {
+      // remove old map markers
+      for(var i1 = 0 ; i1 < mapMarkers.length ; i1++) {
+        map.removeLayer(mapMarkers[i1]);
+      }
+
+      // empty mapMarkers array to be filled with new bus locations data
+      mapMarkers = [];
+
+      // update new bus location map markers
+      for(var i2 = 0 ; i2 < dataJson.length ; i2++) {
+        var marker = L.marker([dataJson[i2].Latitude, dataJson[i2].Longitude])
+          .addTo(map)
+          .bindPopup("<b>Bus # </b>" + dataJson[i2].RouteNo + " <b>Going to </b>" + dataJson[i2].Destination);
+        mapMarkers.push(marker);
+        //console.log(dataJson[i].Longitude);
+      }
+    }
+
+    // start update loop (updates bus locations every second)
+    setTimeout(getBusLocations, 2000);
   </script>
 </body>
 </html>
